@@ -1,0 +1,129 @@
+---
+title: "Economic Mobility Exploration"
+author: "Laurie Heyer"
+date: "1/26/2023"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+```
+
+
+## Make a bar graph version of a Du Bois data portrait
+
+1. Explain how the following tribble represents occupation data in the [Du Bois data portrait](https://tile.loc.gov/storage-services/service/pnp/ppmsca/33800/33889v.jpg) that looks like two pie wedges.
+
+2. From this data portrait, can you tell what percentage of domestic jobs are filled by White people and what percent are filled by Black people? Why or why not?
+
+```{r}
+# Make a data frame for the occupation visualization
+occup <- tribble(
+  ~sector,    ~race,    ~pct,
+  "Agriculture", "black", 62, 
+  "Agriculture", "white", 64,
+  "Domestic", "black", 28,
+  "Domestic", "white", 5.5,
+  "Manufacturing", "black", 5,
+  "Manufacturing", "white", 13.5,
+  "Trade/Trans", "black", 4.5,
+  "Trade/Trans", "white", 13,
+  "Professions", "black", 0.5,
+  "Professions", "white", 4
+)
+
+```
+
+3. Use an appropriate geom to make at least two different bar graphs to visualize these data. Consider different choices for the x variable, and different choices of position. 
+
+```{r}
+# This bar graph is not useful, because the sum of black and white percentages in each sector is not 100, and does not mean anything 
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=sector, y=pct, fill=race))
+
+
+# dodge makes it easy to see all the values compared to each other
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=sector, y=pct, fill=race), position="dodge")
+
+# fill makes it easier to compare percentages. However, WATCH OUT! 
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=sector, y=pct, fill=race), position="fill")
+
+# likewise, stacking percentages does not make sense, as now the total is greater than 100, so not a percentage
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=sector, y=pct, fill=race))
+
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=race, y=pct, fill=sector), position="dodge")
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=race, y=pct, fill=sector), position="fill")
+
+# note that stacking THESE percentages is fine, in fact gives the exact same result as position="fill" because these percentages should add to 100 (and they do!)
+ggplot(data=occup) +
+  geom_col(mapping = aes(x=race, y=pct, fill=sector))
+```
+
+Above, it is *MISLEADING* at best, and most likely *WRONG*, to use position=fill when the x variable is sector. This is not a helpful visualization when the original data are already percentages. In particular, we do NOT know that about 16% of domestic jobs are held by Whites and about 84% are held by Blacks. We only know that 5.5% of Whites work in domestic jobs and 28% of Blacks work in domestic jobs. This is saying something very different! 
+
+However, both of the positions are OK to use when race is the x variable. The fill position is closer to the idea of the pie wedges of the original data portrait.  
+
+## Read in Chetty data (with a twist)
+```{r}
+chetty <- read_excel("Lab1_Chetty_2014.xlsx", skip=1)
+# The following code converts the variable top_100 from continuous to categorical
+chetty <- chetty %>%
+  mutate(top_100 = as.factor(top_100))
+```
+
+4. Which variables in the chetty data frame are appropriate x variables for a bar graph? 
+
+* Any categorical variable can be the x-variable in a bar graph, so cz_name, state, region, division, and urban. 
+
+* Note that the variables with values of either 0 or 1 (top_100, inctax_progressive, eitc) are _theoretically_ categorical because there are only two options for the value. However, in this data frame they are read in as "dbl" which is a continuous numerical variable type. Because I converted top_100 to a "factor," it is also categorical, and you could do the same with the other 0/1 variables. We'll learn more about this later!
+
+5. Make two separate bar graphs for two different x variables. 
+
+6. Make two more bar graphs that display proportions rather than counts of your selected variables. 
+```{r}
+# 5
+ggplot(data=chetty, mapping=aes(x=region)) +
+  geom_bar()
+ggplot(data=chetty, mapping=aes(x=urban)) +
+  geom_bar()
+
+#6
+ggplot(data=chetty, mapping=aes(x=region, y=stat(prop), group=1)) +
+  geom_bar()
+ggplot(data=chetty, mapping=aes(x=urban, y=stat(prop), group=1)) +
+  geom_bar()
+```
+
+7. Make a bar graph that lets you compare the number of urban and rural CZ's in each of the four regions. 
+
+8. Make a bar graph that lets you compare the total number of CZ's in each of the four regions, including the proportion that are urban and rural.
+
+9. Make another bar graph that lets you easily compare the proportions of urban CZs across the four regions.
+```{r}
+# 7
+ggplot(data=chetty, mapping=aes(x=region, fill=urban)) +
+  geom_bar(position="dodge")
+
+# 8
+ggplot(data=chetty, mapping=aes(x=region, fill=urban)) +
+  geom_bar()
+
+# 9    
+ggplot(data=chetty, mapping=aes(x=region, fill=urban)) +
+  geom_bar(position="fill")
+```
+10. Discuss the pros and cons of each visualization you created.
+
+Pros/cons for #3 are addressed right after that code chunk. Not much to say for #5 and #6 except a single variable bar graph can be used for either counts or proportions, and which one is best can depend on the context and the audience.
+
+The pros and cons of each graph in #7, 8, and 9 are essentially determined by the instructions themselves, i.e., what they are helpful in displaying and comparing.
+

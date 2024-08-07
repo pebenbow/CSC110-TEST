@@ -1,0 +1,70 @@
+---
+title: "In-class activity, Thursday, 1-19"
+author: "Laurie Heyer"
+date: "1/19/2022"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+```
+
+Read in the incarceration data
+
+```{r}
+prison <- read_excel("justice_NY_clean.xls",
+                     skip=6)
+```
+
+1. Make a scatter plot of the % Under $25K vs rate. 
+```{r}
+ggplot(data = prison) + 
+  geom_point(mapping = aes(x = pct_under_25K, y = rate))
+```
+
+
+2. Use aesthetics to indicate cost
+```{r}
+ggplot(data = prison) + 
+  geom_point(mapping = aes(x = pct_under_25K, y = rate, size = cost))
+```
+
+3. Change the size, shape and/or color of all points in your scatterplot
+```{r}
+ggplot(data = prison) + 
+  geom_point(mapping = aes(x = pct_under_25K, y = rate), 
+             shape = 24, size = 5, color = "black", fill = "purple")
+```
+
+4. What problem(s) do you encounter if you try to use the variable $cost original instead of cost?
+
+* One problem is that $cost original is not a standard variable name, so you have to enclose it in backticks (not apostrophes!)
+* Another problem is $cost original is not a numeric variable, so the scale makes no sense. Each individual value in the data frame gets its own dot size, and they are not in numberical order. 
+```{r}
+ggplot(data = prison) + 
+  geom_point(mapping = aes(x = pct_under_25K, y = rate, size = `$cost original`))
+```
+
+# Try knitting this to Word, html and pdf
+
+## Do they all work?
+
+### Compare the formatting of this line and the two above
+
+* a bullet point -- often need a blank line above a list to get it to format correctly when you knit
+- same level, with minus sign
+  + one tab with plus
+    * two tabs, back to star
+      + three tabs, a plus
+
+  
+1. numbered list
+    a. two tabs
+        i. four tabs, roman numeral
+    a. back to two with another a
+    a. yet another a
+1. second item

@@ -1,0 +1,138 @@
+---
+title: "Economic Mobility Exploration"
+author: "Laurie Heyer"
+date: "1/25/2023"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+```
+
+## Read in Chetty data
+```{r}
+chetty <- read_excel("Lab1_Chetty_2014.xlsx", skip=1)
+```
+
+
+## Look for correlations
+1. Visualize the relationship between social capital and absolute mobility. Do you see a correlation? Is it what you expected from the Chetty study executive summary?
+
+2. Add an aesthetic to your graph to represent whether the CZ is urban or not. Do your results suggest that Simpson's paradox could be an issue?
+
+3. Separate urban and non-urban CZ's into two separate plots.
+
+4. Add a smooth fit to each of your plots above. Experiment with adding the option method="lm" in your geom_smooth. What does this option do?
+
+```{r}
+#1
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = abs_mobility)) +
+  geom_point()
+
+#2
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() 
+
+#3
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = abs_mobility)) +
+  geom_point() +
+  facet_wrap(~urban)
+
+#4
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth()
+
+# note that method="lm" shows the line of best fit (regression line) rather than the default smooth curve  
+# also note that se=FALSE takes away the visualization of uncertainty shaded in gray
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+```
+5. Repeat the above plots for relative mobility. What differences do you observe?
+
+```{r}
+#1
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = rel_mobility)) +
+  geom_point()
+
+#2
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = rel_mobility, 
+                     color=urban)) +
+  geom_point() 
+
+#3
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = rel_mobility)) +
+  geom_point() +
+  facet_wrap(~urban)
+
+#4
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = rel_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth()
+
+# note that method="lm" shows the line of best fit (regression line) rather than the default smooth curve  
+# also note that se=FALSE takes away the visualization of uncertainty shaded in gray
+ggplot(data=chetty,
+       mapping = aes(x = social_capital, y = rel_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+```
+
+* Notice that relative mobility reverses the relationship, although the relationship is not very strong any more, it is leaning negative rather than positive as with absolute mobility. 
+* Our discussion of the definition of relative mobility on Tuesday helps explain this opposite but less conclusive relationship.
+
+
+6. Repeat the above plots for a different variable that was highly correlated with economic mobility.
+```{r}
+#1
+ggplot(data=chetty,
+       mapping = aes(x = gini, y = abs_mobility)) +
+  geom_point()
+
+#2
+ggplot(data=chetty,
+       mapping = aes(x = gini, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() 
+
+#3
+ggplot(data=chetty,
+       mapping = aes(x = gini, y = abs_mobility)) +
+  geom_point() +
+  facet_wrap(~urban)
+
+#4
+ggplot(data=chetty,
+       mapping = aes(x = gini, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth()
+
+# note that method="lm" shows the line of best fit (regression line) rather than the default smooth curve  
+# also note that se=FALSE takes away the visualization of uncertainty shaded in gray
+ggplot(data=chetty,
+       mapping = aes(x = gini, y = abs_mobility, 
+                     color=urban)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+```
+
